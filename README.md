@@ -31,15 +31,15 @@ language:
   - "[[translated]]"
   - "[[chinese]]"
 pagecount: 17
-cover: https://t2.nhentai.net/galleries/3635201/cover.webp.webp
+cover: https://t1.nhentai.net/galleries/3635201/cover.webp.webp
 uploaded: 2025-11-13T10:06:56.332524+00:00
-ctime: 2025-11-13T18:25:41+08:00
-mtime: 2025-11-13T18:25:41+08:00
+ctime: 2025-11-14T13:29:00+08:00
+mtime: 2025-11-14T13:29:00+08:00
 ---
 
-# 【あめうさぎ (飴玉コン)】 あまふわココチノえっち (ご注文はうさぎですか_) 【中国翻訳】 【DL版】
+# 【あめうさぎ (飴玉コン)】 あまふわココチノえっち (ご注文はうさぎですか_) 【中国翻訳】 【DL版】 【nhentai】
 
-![200](https://t2.nhentai.net/galleries/3635201/cover.webp.webp)
+![200](https://t1.nhentai.net/galleries/3635201/cover.webp.webp)
 
 | | |
 | --- | --- |
