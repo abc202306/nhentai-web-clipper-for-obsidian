@@ -59,7 +59,7 @@ mtime: 2025-11-13T18:25:41+08:00
 
 ## How to use
 
-First, install this user script.
+First, install this user script at https://greasyfork.org/en/scripts/555701-nhentai-web-clipper-for-obsidian (Note: the github repo is https://github.com/abc202306/nhentai-web-clipper-for-obsidian)
 
 Then, when you navigate to the URL https://nhentai.net/g/*, click the "OK" button in the pop-up dialog box to save the current gallery's metadata as an Obsidian Markdown note file.
 
