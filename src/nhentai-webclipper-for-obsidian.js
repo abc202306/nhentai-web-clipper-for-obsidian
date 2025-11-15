@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NHentai Web Clipper for Obsidian
 // @namespace    https://nhentai.net
-// @version      v1.0.10.20251115
+// @version      v1.0.11.20251115
 // @description  🔞 A user script that exports NHentai gallery metadata as Obsidian Markdown files (Obsidian NHentai Web Clipper).
 // @author       abc202306
 // @match        https://nhentai.net/g/*
@@ -63,7 +63,8 @@
       pagecount: null,
       uploaded: null,
       ctime: now,
-      mtime: now
+      mtime: now,
+      unindexedData: {}
     };
 
     const keyMap = {
@@ -85,10 +86,37 @@
       } else if (keyMap[groupName]) {
         data[keyMap[groupName]] = [...tagGroupCon.querySelectorAll(".name")]
           .map(el => `[[${getTagName(el)}]]`);
+      } else {
+        data.unindexedData[groupName.toLowerCase().replaceAll(/\s/,"")] = [...tagGroupCon.querySelectorAll(".name")]
+          .map(el => `[[${getTagName(el)}]]`);
       }
     });
 
     return data;
+  }   
+
+  function getUnindexedDataFrontMatterPartStrBlock(unindexedData) {
+    let unindexedDataFrontMatterPartStrBlock = '';
+    Object.entries(unindexedData).forEach(([key,value]) => {
+      if (Array.isArray(data[key])) {
+        unindexedDataFrontMatterPartStrBlock += `\n${key}:${getYamlArrayStr(value)}`;
+      } else {
+        unindexedDataFrontMatterPartStrBlock += `\n${key}: "${value}"`;
+      }
+    });
+    return unindexedDataFrontMatterPartStrBlock;
+  }
+
+  function getUnindexedDataTablePartStrBlock(unindexedData) {
+    let unindexedDataTablePartStrBlock = '';
+    Object.entries(unindexedData).forEach(([key,value]) => {
+      if (Array.isArray(data[key])) {
+        unindexedDataTablePartStrBlock += `\n| ${key} | ${value.join(", ")} |`;
+      } else {
+        unindexedDataTablePartStrBlock += `\n| ${key} | ${value} |`;
+      }
+    });
+    return unindexedDataTablePartStrBlock;
   }
 
   // Build Obsidian note content
@@ -112,7 +140,7 @@ pagecount: ${data.pagecount}
 cover: "${data.cover}"
 uploaded: ${data.uploaded}
 ctime: ${data.ctime}
-mtime: ${data.mtime}
+mtime: ${data.mtime}${getUnindexedDataFrontMatterPartStrBlock(data.unindexedData)}
 ---
 
 # ${data.title}
@@ -132,7 +160,7 @@ mtime: ${data.mtime}
 | Languages | ${data.language.join(", ")} |
 | Categories | ${data.categories.join(", ")} |
 | Pages | ${data.pagecount} |
-| Uploaded | ${data.uploaded} |
+| Uploaded | ${data.uploaded} |${getUnindexedDataTablePartStrBlock(data.unindexedData)}
 `;
   }
 
