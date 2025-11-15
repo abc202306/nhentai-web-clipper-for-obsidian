@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NHentai Web Clipper for Obsidian
 // @namespace    https://nhentai.net
-// @version      v1.0.9.20251115
+// @version      v1.0.10.20251115
 // @description  🔞 A user script that exports NHentai gallery metadata as Obsidian Markdown files (Obsidian NHentai Web Clipper).
 // @author       abc202306
 // @match        https://nhentai.net/g/*
@@ -21,7 +21,7 @@
     const fileContent = getFileContent(data);
     const obsidianURI = getObsidianURI(data.title, fileContent);
 
-    if (confirm("Do you want to proceed?")) {
+    if (confirm("NHentai Web Clipper for Obsidian (a tampermonkey user script by abc202306) says:\n\nDo you want to proceed to clip the nhentai gallery metadata as a obsidian markdown note (by obsidian uri protocol api)?\n\nclick 'OK' to proceed, or 'Cancel' to abort.")) {
       window.location.href = obsidianURI;
     }
   }
