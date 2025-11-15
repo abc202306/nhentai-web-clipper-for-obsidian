@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NHentai Web Clipper for Obsidian
 // @namespace    https://nhentai.net
-// @version      v1.0.11.20251115
+// @version      v1.0.12.20251115
 // @description  🔞 A user script that exports NHentai gallery metadata as Obsidian Markdown files (Obsidian NHentai Web Clipper).
 // @author       abc202306
 // @match        https://nhentai.net/g/*
@@ -98,7 +98,7 @@
   function getUnindexedDataFrontMatterPartStrBlock(unindexedData) {
     let unindexedDataFrontMatterPartStrBlock = '';
     Object.entries(unindexedData).forEach(([key,value]) => {
-      if (Array.isArray(data[key])) {
+      if (Array.isArray(value)) {
         unindexedDataFrontMatterPartStrBlock += `\n${key}:${getYamlArrayStr(value)}`;
       } else {
         unindexedDataFrontMatterPartStrBlock += `\n${key}: "${value}"`;
@@ -110,7 +110,7 @@
   function getUnindexedDataTablePartStrBlock(unindexedData) {
     let unindexedDataTablePartStrBlock = '';
     Object.entries(unindexedData).forEach(([key,value]) => {
-      if (Array.isArray(data[key])) {
+      if (Array.isArray(value)) {
         unindexedDataTablePartStrBlock += `\n| ${key} | ${value.join(", ")} |`;
       } else {
         unindexedDataTablePartStrBlock += `\n| ${key} | ${value} |`;
