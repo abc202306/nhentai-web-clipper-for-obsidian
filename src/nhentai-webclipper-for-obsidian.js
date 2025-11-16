@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NHentai Web Clipper for Obsidian
 // @namespace    https://nhentai.net
-// @version      v1.0.15.20251116
+// @version      v1.0.16.20251116
 // @description  🔞 A user script that exports NHentai gallery metadata as Obsidian Markdown files (Obsidian NHentai Web Clipper).
 // @author       abc202306
 // @match        https://nhentai.net/g/*
@@ -14,6 +14,16 @@
   'use strict';
 
   class Main {
+    static KEY_MAP = {
+      Parodies: "parody",
+      Characters: "character",
+      Tags: "keywords",
+      Artists: "artist",
+      Groups: "group",
+      Languages: "language",
+      Categories: "categories"
+    };
+
     util;
     
     // Entry point
@@ -33,7 +43,8 @@
     }
     getNHentaiGalleryData() {
       const info = document.getElementById("info");
-      if (!info) return null;
+      const coverImg = document.querySelector("#cover img");
+      if (!info || !coverImg) return null;
       const titles = info.querySelectorAll(".title");
 
       const now = this.util.getLocalISOStringWithTimezone();
@@ -46,7 +57,7 @@
         english: titleEN,
         japanese: titleJP,
         url: window.location.href,
-        cover: document.querySelector("#cover img").src,
+        cover: coverImg.src,
         parody: [],
         character: [],
         keywords: [],
@@ -61,16 +72,6 @@
         unindexedData: {}
       };
 
-      const keyMap = {
-        Parodies: "parody",
-        Characters: "character",
-        Tags: "keywords",
-        Artists: "artist",
-        Groups: "group",
-        Languages: "language",
-        Categories: "categories"
-      };
-
       info.querySelectorAll("#tags > div.tag-container").forEach(tagGroupCon => {
         const groupName = (tagGroupCon.firstElementChild?.textContent || "").trim().replace(/:$/, "");
         if (groupName === "Uploaded") {
@@ -79,8 +80,8 @@
         } else if (groupName === "Pages") {
           const nameEl = tagGroupCon.querySelector(".name");
           data.pagecount = nameEl ? this.getTagName(nameEl) : null;
-        } else if (keyMap[groupName]) {
-          data[keyMap[groupName]] = Array.from(tagGroupCon.querySelectorAll(".name"))
+        } else if (Main.KEY_MAP[groupName]) {
+          data[Main.KEY_MAP[groupName]] = Array.from(tagGroupCon.querySelectorAll(".name"))
             .map(el => `[[${this.getTagName(el)}]]`);
         } else {
           const key = groupName.toLowerCase().replace(/\s/g, "");
@@ -162,35 +163,23 @@ mtime: ${data.mtime}${this.util.getUnindexedDataFrontMatterPartStrBlock(data.uni
         ["append", "1"]
       ].map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join("&");
 
-      return `obsidian://new?${params};`;
+      return `obsidian://new?${params}`;
     }
 
     getUnindexedDataFrontMatterPartStrBlock(unindexedData) {
-      let unindexedDataFrontMatterPartStrBlock = '';
-      Object.entries(unindexedData).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          unindexedDataFrontMatterPartStrBlock += `\n${key}:${this.getYamlArrayStr(value)}`;
-        } else {
-          unindexedDataFrontMatterPartStrBlock += `\n${key}: "${value}"`;
-        }
-      });
-      return unindexedDataFrontMatterPartStrBlock;
+      return Object.entries(unindexedData).map(([key, value]) => 
+        Array.isArray(value) ? `\n${key}:${this.getYamlArrayStr(value)}` : `\n${key}: "${value}"`
+      ).join('');
     }
 
     getUnindexedDataTablePartStrBlock(unindexedData) {
-      let unindexedDataTablePartStrBlock = '';
-      Object.entries(unindexedData).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          unindexedDataTablePartStrBlock += `\n| ${key} | ${value.join(", ")} |`;
-        } else {
-          unindexedDataTablePartStrBlock += `\n| ${key} | ${value} |`;
-        }
-      });
-      return unindexedDataTablePartStrBlock;
+      return Object.entries(unindexedData).map(([key, value]) => 
+        `\n| ${key} | ${Array.isArray(value) ? value.join(", ") : value} |`
+      ).join('');
     }
 
     escapePipe(str) {
-      return String(str || "").replace(/\|/g, "\\|");
+      return (str || "").replace(/\|/g, "\\|");
     }
 
     sanitizeTitle(titleStr, addtionalSuffix) {
