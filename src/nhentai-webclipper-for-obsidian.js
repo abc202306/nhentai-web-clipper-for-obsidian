@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NHentai Web Clipper for Obsidian
 // @namespace    https://nhentai.net
-// @version      v1.0.16.20251116
+// @version      v1.0.17.20251116
 // @description  🔞 A user script that exports NHentai gallery metadata as Obsidian Markdown files (Obsidian NHentai Web Clipper).
 // @author       abc202306
 // @match        https://nhentai.net/g/*
@@ -15,19 +15,19 @@
 
   class Main {
     static KEY_MAP = {
-      Parodies: "parody",
-      Characters: "character",
-      Tags: "keywords",
-      Artists: "artist",
-      Groups: "group",
-      Languages: "language",
-      Categories: "categories"
+      parodies: "parody",
+      characters: "character",
+      tags: "keywords",
+      artists: "artist",
+      groups: "group",
+      languages: "language",
+      categories: "categories"
     };
 
     util;
-    
+
     // Entry point
-    static main(){
+    static main() {
       new Main(new Util());
     }
 
@@ -44,7 +44,7 @@
     getNHentaiGalleryData() {
       const info = document.getElementById("info");
       const coverImg = document.querySelector("#cover img");
-      if (!info || !coverImg) return null;
+      if (!info || !coverImg) { throw new Error("NHentai Web Clipper for Obsidian: Failed to locate necessary DOM elements."); };
       const titles = info.querySelectorAll(".title");
 
       const now = this.util.getLocalISOStringWithTimezone();
@@ -73,27 +73,27 @@
       };
 
       info.querySelectorAll("#tags > div.tag-container").forEach(tagGroupCon => {
-        const groupName = (tagGroupCon.firstElementChild?.textContent || "").trim().replace(/:$/, "");
-        if (groupName === "Uploaded") {
+        const key = (tagGroupCon.firstElementChild?.textContent || "").trim().replace(/:$/, "").toLowerCase().replace(/\s/g, "");
+        if (key === "uploaded") {
           const timeEl = tagGroupCon.querySelector("time");
           if (timeEl) data.uploaded = timeEl.dateTime;
-        } else if (groupName === "Pages") {
+        } else if (key === "pages") {
           const nameEl = tagGroupCon.querySelector(".name");
           data.pagecount = nameEl ? this.getTagName(nameEl) : null;
         } else if (Main.KEY_MAP[groupName]) {
-          data[Main.KEY_MAP[groupName]] = Array.from(tagGroupCon.querySelectorAll(".name"))
-            .map(el => `[[${this.getTagName(el)}]]`);
+          const newKey = Main.KEY_MAP[groupName];
+          data[newKey] = this.toArray(data[newKey])
+            .concat(Array.from(tagGroupCon.querySelectorAll(".name")).map(el => `[[${this.getTagName(el)}]]`));
         } else {
-          const key = groupName.toLowerCase().replace(/\s/g, "");
-          data.unindexedData[key] = Array.from(tagGroupCon.querySelectorAll(".name"))
-            .map(el => `[[${this.getTagName(el)}]]`);
+          data.unindexedData[key] = this.toArray(data.unindexedData[key])
+            .concat(Array.from(tagGroupCon.querySelectorAll(".name")).map(el => `[[${this.getTagName(el)}]]`));
         }
       });
 
       return data;
     }
 
-    getNHentaiOBMDNoteFileContent(data){
+    getNHentaiOBMDNoteFileContent(data) {
       return `---
 up:
   - "[[Gallery]]"
@@ -135,8 +135,18 @@ mtime: ${data.mtime}${this.util.getUnindexedDataFrontMatterPartStrBlock(data.uni
 `;
     }
 
-    getTagName(tagNameEl){
+    getTagName(tagNameEl) {
       return this.util.getTagNameStr(tagNameEl.innerText);
+    }
+
+    toArray(value) {
+      if (Array.isArray(value)) {
+        return value;
+      } else if (value != null) {
+        return [value];
+      } else {
+        return [];
+      }
     }
   }
 
@@ -167,13 +177,13 @@ mtime: ${data.mtime}${this.util.getUnindexedDataFrontMatterPartStrBlock(data.uni
     }
 
     getUnindexedDataFrontMatterPartStrBlock(unindexedData) {
-      return Object.entries(unindexedData).map(([key, value]) => 
+      return Object.entries(unindexedData).map(([key, value]) =>
         Array.isArray(value) ? `\n${key}:${this.getYamlArrayStr(value)}` : `\n${key}: "${value}"`
       ).join('');
     }
 
     getUnindexedDataTablePartStrBlock(unindexedData) {
-      return Object.entries(unindexedData).map(([key, value]) => 
+      return Object.entries(unindexedData).map(([key, value]) =>
         `\n| ${key} | ${Array.isArray(value) ? value.join(", ") : value} |`
       ).join('');
     }
