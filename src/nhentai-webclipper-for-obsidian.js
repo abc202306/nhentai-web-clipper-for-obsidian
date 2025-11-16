@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NHentai Web Clipper for Obsidian
 // @namespace    https://nhentai.net
-// @version      v1.0.14.20251116
+// @version      v1.0.15.20251116
 // @description  🔞 A user script that exports NHentai gallery metadata as Obsidian Markdown files (Obsidian NHentai Web Clipper).
 // @author       abc202306
 // @match        https://nhentai.net/g/*
@@ -32,13 +32,14 @@
 
     }
     getNHentaiGalleryData() {
-      const info = document.querySelector("#info");
+      const info = document.getElementById("info");
+      if (!info) return null;
       const titles = info.querySelectorAll(".title");
 
       const now = this.util.getLocalISOStringWithTimezone();
 
-      const titleEN = this.util.getTitleStr(titles[0]);
-      const titleJP = this.util.getTitleStr(titles[1]);
+      const titleEN = this.util.getTitleStr(titles[0] ?? null);
+      const titleJP = this.util.getTitleStr(titles[1] ?? null);
 
       const data = {
         title: this.util.sanitizeTitle(titleJP || titleEN, " 【nhentai】"),
@@ -71,17 +72,19 @@
       };
 
       info.querySelectorAll("#tags > div.tag-container").forEach(tagGroupCon => {
-        const groupName = tagGroupCon.firstChild.textContent.trim().replace(/:$/, "");
+        const groupName = (tagGroupCon.firstElementChild?.textContent || "").trim().replace(/:$/, "");
         if (groupName === "Uploaded") {
-          data.uploaded = tagGroupCon.querySelector("time").dateTime;
+          const timeEl = tagGroupCon.querySelector("time");
+          if (timeEl) data.uploaded = timeEl.dateTime;
         } else if (groupName === "Pages") {
-          data.pagecount = this.getTagName(tagGroupCon.querySelector(".name"));
+          const nameEl = tagGroupCon.querySelector(".name");
+          data.pagecount = nameEl ? this.getTagName(nameEl) : null;
         } else if (keyMap[groupName]) {
-          data[keyMap[groupName]] = [...tagGroupCon.querySelectorAll(".name")]
+          data[keyMap[groupName]] = Array.from(tagGroupCon.querySelectorAll(".name"))
             .map(el => `[[${this.getTagName(el)}]]`);
         } else {
-          const key = groupName.toLowerCase().replaceAll(/\s/,"");
-          data.unindexedData[key] = [...tagGroupCon.querySelectorAll(".name")]
+          const key = groupName.toLowerCase().replace(/\s/g, "");
+          data.unindexedData[key] = Array.from(tagGroupCon.querySelectorAll(".name"))
             .map(el => `[[${this.getTagName(el)}]]`);
         }
       });
@@ -144,9 +147,8 @@ mtime: ${data.mtime}${this.util.getUnindexedDataFrontMatterPartStrBlock(data.uni
       setTimeout(async () => {
         if (confirm(message)) {
           const galleryData = getGalleryData();
-          const obsidianURI = this.getObsidianURI(
-            galleryData.title, await getOBMDNoteFileContent(galleryData)
-          );
+          const content = await Promise.resolve(getOBMDNoteFileContent(galleryData));
+          const obsidianURI = this.getObsidianURI(galleryData.title, content);
           window.location.href = obsidianURI;
         }
       }, timeout);
@@ -188,15 +190,15 @@ mtime: ${data.mtime}${this.util.getUnindexedDataFrontMatterPartStrBlock(data.uni
     }
 
     escapePipe(str) {
-      return str.replace(/\|/g, "\\|");
+      return String(str || "").replace(/\|/g, "\\|");
     }
 
     sanitizeTitle(titleStr, addtionalSuffix) {
       return (titleStr + addtionalSuffix)
-        .replaceAll("[", "【")
-        .replaceAll("]", "】")
-        .replaceAll(/[\\\/\|\*\?\:\<\>\"]/g, "_")
-        .replaceAll(/\s{2,}/g, " ");
+        .replace(/\[/g, "【")
+        .replace(/\]/g, "】")
+        .replace(/[\\\/\|\*\?\:\<\>\"]/g, "_")
+        .replace(/\s{2,}/g, " ");
     }
 
     getTitleStr(titleEl) {
