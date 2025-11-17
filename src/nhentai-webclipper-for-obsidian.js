@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NHentai Web Clipper for Obsidian
 // @namespace    https://nhentai.net
-// @version      v1.0.17.20251116
+// @version      v1.0.18.20251117
 // @description  🔞 A user script that exports NHentai gallery metadata as Obsidian Markdown files (Obsidian NHentai Web Clipper).
 // @author       abc202306
 // @match        https://nhentai.net/g/*
@@ -73,7 +73,8 @@
       };
 
       info.querySelectorAll("#tags > div.tag-container").forEach(tagGroupCon => {
-        const key = (tagGroupCon.firstElementChild?.textContent || "").trim().replace(/:$/, "").toLowerCase().replace(/\s/g, "");
+        const textNode = [...tagGroupCon.childNodes].find(i => i.nodeType === Node.TEXT_NODE);
+        const key = ((textNode && textNode.textContent) || "").trim().replace(/:$/, "").toLowerCase().replace(/\s/g, "");
         if (key === "uploaded") {
           const timeEl = tagGroupCon.querySelector("time");
           if (timeEl) data.uploaded = timeEl.dateTime;
