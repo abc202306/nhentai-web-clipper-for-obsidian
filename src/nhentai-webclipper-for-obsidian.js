@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NHentai Web Clipper for Obsidian
 // @namespace    https://nhentai.net
-// @version      v1.0.18.20251117
+// @version      v1.0.19.20251118
 // @description  🔞 A user script that exports NHentai gallery metadata as Obsidian Markdown files (Obsidian NHentai Web Clipper).
 // @author       abc202306
 // @match        https://nhentai.net/g/*
@@ -81,8 +81,8 @@
         } else if (key === "pages") {
           const nameEl = tagGroupCon.querySelector(".name");
           data.pagecount = nameEl ? this.getTagName(nameEl) : null;
-        } else if (Main.KEY_MAP[groupName]) {
-          const newKey = Main.KEY_MAP[groupName];
+        } else if (Main.KEY_MAP[key]) {
+          const newKey = Main.KEY_MAP[key];
           data[newKey] = this.toArray(data[newKey])
             .concat(Array.from(tagGroupCon.querySelectorAll(".name")).map(el => `[[${this.getTagName(el)}]]`));
         } else {
