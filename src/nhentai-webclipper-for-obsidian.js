@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NHentai Web Clipper for Obsidian
 // @namespace    https://nhentai.net
-// @version      v1.0.20.20251118
+// @version      v1.0.21.20251118
 // @description  🔞 A user script that exports NHentai gallery metadata as Obsidian Markdown files (Obsidian NHentai Web Clipper).
 // @author       abc202306
 // @match        https://nhentai.net/g/*
@@ -57,7 +57,7 @@
         english: titleEN,
         japanese: titleJP,
         url: window.location.href,
-        aliases: [titleEN, titleJP].filter(t => t && t.length !== 0).unique(),
+        aliases: [...new Set([titleEN, titleJP].filter(t => t && t.length !== 0))],
         cover: coverImg.src,
         parody: [],
         character: [],
