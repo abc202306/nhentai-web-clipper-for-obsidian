@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NHentai Web Clipper for Obsidian
 // @namespace    https://nhentai.net
-// @version      v1.0.23.20251118
+// @version      v1.0.24.20251205
 // @description  🔞 A user script that exports NHentai gallery metadata as Obsidian Markdown files (Obsidian NHentai Web Clipper).
 // @author       abc202306
 // @match        https://nhentai.net/g/*
@@ -204,12 +204,13 @@ mtime: ${data.mtime}${this.util.getUnindexedDataFrontMatterPartStrBlock(data.uni
         .replace(/\[/g, "【")
         .replace(/\]/g, "】")
         .replace(/[#\\\/\|\*\?\:\<\>\"]/g, "_")
-        .replace(/\s{2,}/g, " ");
+        .replace(/\s{2,}/g, " ")
+        .trim();
     }
 
     getTitleStr(titleEl) {
       if (!titleEl) return "";
-      return titleEl.innerText.replace(/\s{2,}/g, " ").replace(/"/g, "\\\"");
+      return titleEl.innerText.replace(/\s{2,}/g, " ").replace(/"/g, "\\\"").trim();
     }
 
     getTagNameStr(str) {
