@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NHentai Web Clipper for Obsidian
 // @namespace    https://nhentai.net
-// @version      v1.0.25.20251205
+// @version      v1.0.26.20251206
 // @description  🔞 A user script that exports NHentai gallery metadata as Obsidian Markdown files (Obsidian NHentai Web Clipper).
 // @author       abc202306
 // @match        https://nhentai.net/g/*
@@ -60,6 +60,7 @@
       const galleryID = /(\d+)/.exec(url)[1];
 
       const data = {
+        basename: `nhentai-${galleryID}`,
         title: this.util.sanitizeTitle(titleJP || titleEN, " 【nhentai】 【nhentaiid"+galleryID+"】"),
         english: titleEN,
         japanese: titleJP,
@@ -192,7 +193,7 @@ mtime: ${data.mtime}${this.util.getUnindexedDataFrontMatterPartStrBlock(data.uni
         if (confirm(message)) {
           const galleryData = getGalleryData();
           const content = await Promise.resolve(getOBMDNoteFileContent(galleryData));
-          const obsidianURI = this.getObsidianURI(galleryData.title, content);
+          const obsidianURI = this.getObsidianURI(galleryData.basename, content);
           window.location.href = obsidianURI;
         }
       }, timeout);
