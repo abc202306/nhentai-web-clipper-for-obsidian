@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NHentai Web Clipper for Obsidian
 // @namespace    https://nhentai.net
-// @version      v1.0.30.20251208
+// @version      v1.0.31.20251209
 // @description  🔞 A user script that exports NHentai gallery metadata as Obsidian Markdown files (Obsidian NHentai Web Clipper).
 // @author       abc202306
 // @match        https://nhentai.net/g/*
@@ -164,21 +164,22 @@ mtime: ${data.mtime}${this.util.getUnindexedDataFrontMatterPartStrBlock(data.uni
 
   // utils  
 
+  class DefaultConfig {
+    static vault = "galleries";
+    static path = "galleries/exhentai";
+    static isAutoConfirm = "0";
+  }
+
   class Config {
     static config = new Config();
-    static defaultValue = {
-      vault: "galleries",
-      path: "galleries/nhentai",
-      isAutoConfirm: "0"
-    }
     getPath(){
-      return GM_getValue("path",Config.defaultValue.path).replace(/\/$/,"");
+      return GM_getValue("path",DefaultConfig.path).replace(/\/$/,"");
     }
     getVault(){
-      return GM_getValue("vault",Config.defaultValue.vault);
+      return GM_getValue("vault",DefaultConfig.vault);
     }
     getISAutoConfirm(){
-      return GM_getValue("isAutoConfirm",Config.defaultValue.isAutoConfirm);
+      return GM_getValue("isAutoConfirm",DefaultConfig.isAutoConfirm);
     }
     constructor() {
       this.menuCommandIdForPath = this.registerMenuCommand(
