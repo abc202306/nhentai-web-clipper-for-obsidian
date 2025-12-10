@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NHentai Web Clipper for Obsidian
 // @namespace    https://nhentai.net
-// @version      v1.0.31.20251209
+// @version      v1.0.32.20251210
 // @description  🔞 A user script that exports NHentai gallery metadata as Obsidian Markdown files (Obsidian NHentai Web Clipper).
 // @author       abc202306
 // @match        https://nhentai.net/g/*
@@ -166,7 +166,7 @@ mtime: ${data.mtime}${this.util.getUnindexedDataFrontMatterPartStrBlock(data.uni
 
   class DefaultConfig {
     static vault = "galleries";
-    static path = "galleries/exhentai";
+    static path = "galleries/nhentai";
     static isAutoConfirm = "0";
   }
 
