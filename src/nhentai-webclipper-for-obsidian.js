@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NHentai Web Clipper for Obsidian
 // @namespace    https://nhentai.net
-// @version      v1.0.32.20251210
+// @version      v1.0.33.20251218
 // @description  🔞 A user script that exports NHentai gallery metadata as Obsidian Markdown files (Obsidian NHentai Web Clipper).
 // @author       abc202306
 // @match        https://nhentai.net/g/*
@@ -111,6 +111,7 @@ categories:${this.util.getYamlArrayStr(data.categories)}
 keywords:${this.util.getYamlArrayStr(data.keywords)}
 english: "${data.english}"
 japanese: "${data.japanese}"
+title: "${data.title}"
 url: "${data.url}"
 artist:${this.util.getYamlArrayStr(data.artist)}
 group:${this.util.getYamlArrayStr(data.group)}
@@ -125,7 +126,7 @@ ctime: ${data.ctime}
 mtime: ${data.mtime}${this.util.getUnindexedDataFrontMatterPartStrBlock(data.unindexedData)}
 ---
 
-# ${data.title}
+# \`${data.title}\`
 
 ![200](${data.cover})
 
@@ -254,7 +255,7 @@ mtime: ${data.mtime}${this.util.getUnindexedDataFrontMatterPartStrBlock(data.uni
     }
 
     sanitizeTitle(titleStr, addtionalSuffix="") {
-      return '`'+(titleStr + addtionalSuffix).replace(/\s{2,}/g, " ").trim()+'`';
+      return (titleStr + addtionalSuffix).replace(/\s{2,}/g, " ").trim();
     }
 
     getTitleStr(titleEl) {
