@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NHentai Web Clipper for Obsidian
 // @namespace    https://nhentai.net
-// @version      v1.0.35.20251219
+// @version      v1.0.36.20260101
 // @description  🔞 A user script that exports NHentai gallery metadata as Obsidian Markdown files (Obsidian NHentai Web Clipper).
 // @author       abc202306
 // @match        https://nhentai.net/g/*
@@ -60,7 +60,7 @@
       const galleryID = /(\d+)/.exec(url)[1];
 
       const data = {
-        basename: `nhentai-${galleryID}`,
+        basename: `nhentai-g-${galleryID}`,
         title: this.util.sanitizeTitle(titleJP || titleEN),
         english: titleEN,
         japanese: titleJP,
@@ -93,10 +93,10 @@
         } else if (Main.KEY_MAP[key]) {
           const newKey = Main.KEY_MAP[key];
           data[newKey] = this.toArray(data[newKey])
-            .concat(Array.from(tagGroupCon.querySelectorAll(".name")).map(el => `[[${this.getTagName(el)}]]`));
+            .concat(Array.from(tagGroupCon.querySelectorAll(".name")).map(el => `[[exhentai-tag-${this.getTagName(el)}|${this.getTagName(el)}]]`));
         } else {
           data.unindexedData[key] = this.toArray(data.unindexedData[key])
-            .concat(Array.from(tagGroupCon.querySelectorAll(".name")).map(el => `[[${this.getTagName(el)}]]`));
+            .concat(Array.from(tagGroupCon.querySelectorAll(".name")).map(el => `[[exhentai-tag-${this.getTagName(el)}|${this.getTagName(el)}]]`));
         }
       });
 
@@ -135,15 +135,15 @@ mtime: ${data.mtime}${this.util.getUnindexedDataFrontMatterPartStrBlock(data.uni
 | title_en | \`${this.util.escapePipe(data.english)}\` |
 | title_jp | \`${this.util.escapePipe(data.japanese)}\` |
 | url | ${data.url} |
-| Parodies | ${data.parody.join(", ")} |
-| Characters | ${data.character.join(", ")} |
-| Tags | ${data.keywords.join(", ")} |
-| Artists | ${data.artist.join(", ")} |
-| Groups | ${data.group.join(", ")} |
-| Languages | ${data.language.join(", ")} |
-| Categories | ${data.categories.join(", ")} |
+| Parodies | ${this.util.escapePipe(data.parody.join(", "))} |
+| Characters | ${this.util.escapePipe(data.character.join(", "))} |
+| Tags | ${this.util.escapePipe(data.keywords.join(", "))} |
+| Artists | ${this.util.escapePipe(data.artist.join(", "))} |
+| Groups | ${this.util.escapePipe(data.group.join(", "))} |
+| Languages | ${this.util.escapePipe(data.language.join(", "))} |
+| Categories | ${this.util.escapePipe(data.categories.join(", "))} |
 | Pages | ${data.pagecount} |
-| Uploaded | ${data.uploaded} |${this.util.getUnindexedDataTablePartStrBlock(data.unindexedData)}
+| Uploaded | ${data.uploaded} |${this.util.escapePipe(this.util.getUnindexedDataTablePartStrBlock(data.unindexedData))}
 `;
     }
 
